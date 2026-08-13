@@ -6,40 +6,40 @@ Since production data cannot be used in a POC environment, the data strategy com
 
 ---
 
-## Track 1 — Open Benchmark Datasets
+## Track 1 Open Benchmark Datasets
 
 Public datasets that map directly to each use case and serve as ground truth for pipeline validation.
 
 ### Fraud Detection
-**Dataset:** ULB Credit Card Fraud Detection  
-**Source:** [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)  
-**Size:** 284,807 transactions  
-**Fraud rate:** 0.172% (492 fraud cases)  
-**Features:** 28 PCA-anonymized numerical features + Amount + Time  
+**Dataset:** ULB Credit Card Fraud Detection 
+**Source:** [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) 
+**Size:** 284,807 transactions 
+**Fraud rate:** 0.172% (492 fraud cases) 
+**Features:** 28 PCA-anonymized numerical features + Amount + Time 
 **Why this dataset:** Industry-standard fraud benchmark. Demonstrates class imbalance handling, feature scaling on skewed distributions, and threshold calibration.
 
 ### Credit Risk Scoring
-**Dataset:** Home Credit Default Risk  
-**Source:** [Kaggle](https://www.kaggle.com/competitions/home-credit-default-risk)  
-**Size:** 300K+ applications across 7 relational tables  
-**Default rate:** ~8%  
+**Dataset:** Home Credit Default Risk 
+**Source:** [Kaggle](https://www.kaggle.com/competitions/home-credit-default-risk) 
+**Size:** 300K+ applications across 7 relational tables 
+**Default rate:** ~8% 
 **Why this dataset:** Most realistic public credit risk dataset available. Multi-table join requirement mimics real bank data warehouse structure.
 
-**Secondary:** UCI Default of Credit Card Clients  
-**Source:** [UCI ML Repository](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients)  
-**Size:** 30,000 records  
+**Secondary:** UCI Default of Credit Card Clients 
+**Source:** [UCI ML Repository](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients) 
+**Size:** 30,000 records 
 **Why:** Single flat table, fast iteration, good for baseline pipeline testing.
 
 ### Customer Churn
-**Dataset:** Bank Marketing Dataset  
-**Source:** [UCI ML Repository](https://archive.ics.uci.edu/dataset/222/bank+marketing)  
-**Size:** 41,188 contacts  
-**Features:** 20 features including macroeconomic indicators, contact patterns, customer attributes  
+**Dataset:** Bank Marketing Dataset 
+**Source:** [UCI ML Repository](https://archive.ics.uci.edu/dataset/222/bank+marketing) 
+**Size:** 41,188 contacts 
+**Features:** 20 features including macroeconomic indicators, contact patterns, customer attributes 
 **Why this dataset:** Most banking-authentic public churn proxy available. Mixes feature types, includes temporal and economic context.
 
 ---
 
-## Track 2 — Synthetic Data Generation
+## Track 2 Synthetic Data Generation
 
 500,000 records generated programmatically to match the schema and statistical properties of real bank data, using information gathered from the data scientist.
 
@@ -49,7 +49,7 @@ Public datasets that map directly to each use case and serve as ground truth for
 |---|---|
 | `Faker` | Realistic names, IDs, dates, addresses with locale support |
 | `SDV` | Statistical distribution modeling and sampling |
-| `CTGAN` | Conditional Tabular GAN — preserves column correlations |
+| `CTGAN` | Conditional Tabular GAN preserves column correlations |
 
 ### Schema Sources
 
@@ -64,40 +64,40 @@ The synthetic generator is parameterized to accept:
 
 ```
 Real data statistics
-      │
-      ▼
-Schema questionnaire (15 questions → data scientist)
-      │
-      ▼
+ │
+ ▼
+Schema questionnaire (15 questions data scientist)
+ │
+ ▼
 Statistical profile (means, stds, skewness, correlations)
-      │
-      ▼
+ │
+ ▼
 CTGAN training on open dataset sample
-      │
-      ▼
+ │
+ ▼
 Synthetic data with matching statistical properties
 ```
 
 ---
 
-## Track 3 — Simulated Core Banking Schema
+## Track 3 Simulated Core Banking Schema
 
 Even without real data, we define and populate the exact table schema expected in production. This lets us validate ingestion logic and pipeline structure before receiving real or anonymized data.
 
 ### Tables Simulated
 
 ```sql
-CUSTOMER          -- demographics, tenure, products
-ACCOUNT           -- account type, balance, status
-TRANSACTION       -- channel, amount, merchant, timestamp
-LOAN              -- type, amount, tenor, delinquency_stage
-KYC_STATUS        -- verification status, risk tier
+CUSTOMER -- demographics, tenure, products
+ACCOUNT -- account type, balance, status
+TRANSACTION -- channel, amount, merchant, timestamp
+LOAN -- type, amount, tenor, delinquency_stage
+KYC_STATUS -- verification status, risk tier
 ```
 
 Relationships:
-- CUSTOMER (1) → ACCOUNT (many)
-- ACCOUNT (1) → TRANSACTION (many)
-- CUSTOMER (1) → LOAN (many)
+- CUSTOMER (1) ACCOUNT (many)
+- ACCOUNT (1) TRANSACTION (many)
+- CUSTOMER (1) LOAN (many)
 
 ---
 

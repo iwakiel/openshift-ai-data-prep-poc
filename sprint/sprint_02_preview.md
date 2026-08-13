@@ -1,8 +1,8 @@
-# Sprint 2 — Build & Validate
+# Sprint 2 Build & Validate
 
 **Sprint Goal:** Resolve environment blockers, generate the first synthetic data batch, and deliver a functional end-to-end data preparation pipeline run on RHOAI.
 
-**Status:** 📋 Planned
+**Status:** Planned
 
 ---
 
@@ -22,10 +22,10 @@
 - Validate output against schema expectations
 
 ### 3. First End-to-End Pipeline Run (Priority: High)
-- Stand up ingestion component: MinIO upload → `poc-raw/`
+- Stand up ingestion component: MinIO upload `poc-raw/`
 - Run EDA notebook on sample (10K records) and save profile report
 - Execute cleaning pipeline component (nulls, outliers, encoding)
-- Run Great Expectations validation suite — must achieve 100% pass rate
+- Run Great Expectations validation suite must achieve 100% pass rate
 - Output ML-ready Parquet to `poc-features/` bucket
 
 ### 4. MLflow Integration (Priority: Medium)

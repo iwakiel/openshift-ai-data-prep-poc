@@ -1,227 +1,202 @@
-# 🏦 OpenShift AI — Retail Banking Data Preparation POC
+# OpenShift AI Retail retail banking data Preparation POC
 
-[![Platform](https://img.shields.io/badge/Platform-Red%20Hat%20OpenShift%20AI%202.x-red?logo=redhat)](https://www.redhat.com/en/technologies/cloud-computing/openshift/openshift-ai)
-[![Pipeline](https://img.shields.io/badge/Orchestration-Kubeflow%20Pipelines%20v2-blue?logo=kubeflow)](https://www.kubeflow.org/)
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue?logo=python)](https://python.org)
-[![Quality](https://img.shields.io/badge/Data%20Quality-Great%20Expectations-orange)](https://greatexpectations.io)
-[![Tracking](https://img.shields.io/badge/Tracking-MLflow-blue)](https://mlflow.org)
-[![Storage](https://img.shields.io/badge/Storage-MinIO%20S3-red?logo=minio)](https://min.io)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://python.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> An MLOps proof of concept demonstrating end-to-end **data preparation pipeline design** for retail banking machine learning use cases on Red Hat OpenShift AI (RHOAI).
+End-to-end data preparation pipeline for retail retail banking ML use cases on Red Hat OpenShift AI (RHOAI). This repository covers Sprint 1 of the POC: architecture design, data sourcing strategy, synthetic data generation, and environment verification.
+
+Model training is out of scope for this phase. The deliverable is ML-ready feature datasets, not models.
 
 ---
 
-## 🎯 Project Overview
+## Scope
 
-This repository documents **Sprint 1** of a production-grade data preparation framework. The goal is to validate that OpenShift AI can serve as the MLOps platform for building, orchestrating, and governing data pipelines for retail banking ML models — before any model training begins.
+This POC targets the retail banking division. Three ML use cases are in scope:
 
-The POC deliberately separates **data preparation** from **model development**, treating clean, validated, ML-ready feature datasets as the primary deliverable of this phase.
-
----
-
-## 📋 Use Cases in Scope
-
-| Use Case | Target | Data Source | Key Challenge |
+| Use case | ML task | Target class | Benchmark dataset |
 |---|---|---|---|
-| 🔍 Fraud & AML Detection | Binary classification | Transaction-level events | Severe class imbalance (~1–2% fraud rate) |
-| 📊 Credit Risk Scoring | Default probability | Customer + loan history | Multi-table joins, delinquency staging |
-| 📉 Customer Churn Prediction | Churn probability | Account activity + products | Churn definition window, engagement signals |
+| Fraud and AML detection | Binary classification | ~1.2% fraud rate | ULB Credit Card Fraud (Kaggle) |
+| Credit risk scoring | Default probability | ~8% default rate | Home Credit Default Risk (Kaggle) |
+| Customer churn prediction | Churn probability | ~18% churn rate | Bank Marketing UCI |
+
+Customer segmentation (unsupervised) is a fourth use case planned for Sprint 3.
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
-```mermaid
-graph LR
-    A[Data Sources] --> B[Data Ingestion]
-    B --> C[Raw Storage\nMinIO S3]
-    C --> D[EDA & Cleaning\nJupyter Workbench]
-    D --> E[Quality Validation\nGreat Expectations]
-    E --> F[Feature Engineering]
-    F --> G[ML-Ready Output\nParquet / Delta]
-
-    H[KFP Orchestration\nKubeflow Pipelines v2] -.-> B
-    H -.-> D
-    H -.-> E
-    H -.-> F
-
-    I[MLflow Tracking] -.-> D
-    I -.-> E
-
-    subgraph RHOAI ["🔴 Red Hat OpenShift AI Platform"]
-        B
-        C
-        D
-        E
-        F
-        G
-        H
-        I
-    end
-
-    G --> J[Fraud Model Training]
-    G --> K[Credit Risk Model Training]
-    G --> L[Churn Model Training]
+```
+Data sources
+ Core banking tables (CSV / DB extract)
+ Open benchmark datasets (Kaggle, UCI)
+ Synthetic data (Faker + CTGAN)
+ |
+ v
+[ Phase 1 ] Ingestion boto3 -> MinIO S3 (poc-raw/)
+[ Phase 2 ] EDA and Profiling ydata-profiling -> HTML report (poc-reports/)
+[ Phase 3 ] Cleaning pandas -- dedup, clip, impute, derive features
+[ Phase 4 ] Quality validation Great Expectations -- data contracts per use case
+[ Phase 5 ] Feature output Parquet -> MinIO S3 (poc-features/)
+ |
+ v
+ ML-ready feature datasets (fraud / credit_risk / churn)
 ```
 
-### Pipeline Phases
+The pipeline is orchestrated by Kubeflow Pipelines v2 (DSPA) and experiment metadata is tracked in MLflow. All pipeline components run in a custom container image built from the project Dockerfile.
 
-| Phase | Tool | Input | Output |
-|---|---|---|---|
-| **1. Ingestion** | boto3 / MinIO | CSV, Parquet, API | Raw bucket |
-| **2. EDA & Profiling** | pandas, ydata-profiling | Raw data | Profile report |
-| **3. Cleaning & Transform** | pandas, PySpark | Raw data | Clean dataset |
-| **4. Quality Validation** | Great Expectations | Clean dataset | Validated + report |
-| **5. Feature Engineering** | scikit-learn, pandas | Validated data | Feature dataset (Parquet) |
+Full architecture with bucket structure and resource profiles: [docs/architecture.md](docs/architecture.md)
 
 ---
 
-## 🗂️ Repository Structure
+## Repository structure
 
 ```
 openshift-ai-data-prep-poc/
-│
-├── 📋 sprint/                         # Sprint documentation
-│   ├── sprint_01_goals.md             # Current sprint goals & status
-│   ├── sprint_02_preview.md           # Upcoming sprint preview
-│   └── definition_of_done.md         # DoD for all pipeline work
-│
-├── 📖 docs/                           # Technical documentation
-│   ├── architecture.md               # Detailed architecture decisions
-│   ├── use_cases.md                  # Use case specifications
-│   ├── data_strategy.md             # Dataset sourcing & synthetic data
-│   └── environment_checklist.md     # RHOAI setup verification
-│
-├── 🐍 src/                            # Source code
-│   ├── config.py                     # Central configuration
-│   ├── data_generation/              # Synthetic data generators
-│   │   ├── customers.py              # Customer profile generator
-│   │   └── transactions.py          # Transaction event generator
-│   ├── ingestion/
-│   │   └── minio_client.py          # S3/MinIO utilities
-│   ├── pipeline/
-│   │   ├── components.py            # KFP v2 components
-│   │   └── banking_pipeline.py      # Pipeline definition
-│   └── validation/
-│       └── expectation_suites.py    # Great Expectations suites
-│
-├── 📜 scripts/
-│   ├── verify_rhoai_env.sh          # One-shot environment checker
-│   └── bootstrap_buckets.sh         # MinIO bucket setup
-│
-├── 📓 notebooks/
-│   └── 01_eda_template.py           # EDA exploration template
-│
-├── requirements.txt
-└── requirements-dev.txt
+|
+|-- sprint/
+| |-- sprint_01_goals.md Current sprint goals and status
+| |-- sprint_02_preview.md Next sprint objectives
+| `-- definition_of_done.md DoD for all pipeline work
+|
+|-- docs/
+| |-- architecture.md Pipeline design and platform components
+| |-- data_strategy.md Dataset sourcing and synthetic data approach
+| `-- environment_checklist.md RHOAI setup verification (7 steps)
+|
+|-- src/
+| |-- config.py Central configuration (env vars)
+| |-- data_generation/
+| | |-- customers.py Synthetic retail customer generator
+| | `-- transactions.py Synthetic transaction generator
+| |-- ingestion/
+| | `-- minio_client.py MinIO S3 utilities
+| |-- pipeline/
+| | |-- components.py KFP v2 component definitions
+| | `-- banking_pipeline.py Pipeline definition and compiler
+| `-- validation/
+| `-- expectation_suites.py Great Expectations suites
+|
+|-- scripts/
+| `-- verify_rhoai_env.sh One-shot RHOAI environment checker
+|
+|-- Dockerfile Pipeline component image
+|-- Makefile Common operations
+|-- pyproject.toml Package definition
+`-- .env.example Environment variable template
 ```
 
 ---
 
-## 🚀 Quick Start
+## What is and is not operational
+
+**Works as-is (local):**
+- Synthetic data generators (`src/data_generation/`)
+- MinIO client utilities (`src/ingestion/minio_client.py`)
+- Great Expectations suites (`src/validation/expectation_suites.py`)
+- Environment verification script (`scripts/verify_rhoai_env.sh`)
+
+**Requires setup before use:**
+- KFP pipeline components: need the Docker image built and pushed first (`make build-image push-image`). The components import from the `src` package, which must be baked into the image.
+- Pipeline compilation and submission: requires a running DSPA in your RHOAI namespace.
+- MLflow: requires a running MLflow server in the namespace.
+
+See [docs/environment_checklist.md](docs/environment_checklist.md) for the full verification procedure.
+
+---
+
+## Getting started
 
 ### Prerequisites
 
 - Python 3.9+
-- Access to a Red Hat OpenShift AI 2.x cluster
-- MinIO or S3-compatible object storage
-- Kubeflow Pipelines v2 (DSPA provisioned in your namespace)
+- Red Hat OpenShift AI 2.x cluster
+- MinIO or ODF (S3-compatible object storage) provisioned
+- Kubeflow Pipelines v2 (DSPA) in your namespace
 
-### 1. Clone & Install
+### Install
 
 ```bash
-git clone https://github.com/<your-username>/openshift-ai-data-prep-poc.git
+git clone https://github.com/iwakiel/openshift-ai-data-prep-poc.git
 cd openshift-ai-data-prep-poc
-pip install -r requirements.txt
+pip install -e ".[pipeline]"
 ```
 
-### 2. Configure Environment
+### Configure
 
 ```bash
-export MINIO_ENDPOINT="http://minio.<your-namespace>.svc:9000"
-export AWS_ACCESS_KEY_ID="your-minio-key"
-export AWS_SECRET_ACCESS_KEY="your-minio-secret"
-export MLFLOW_TRACKING_URI="http://mlflow.<your-namespace>.svc:5000"
-export KFP_ENDPOINT="https://ds-pipeline-dspa.<your-namespace>.svc:8443"
+cp .env.example .env
+# Fill in your MinIO endpoint, credentials, and KFP endpoint
+source .env
 ```
 
-### 3. Verify RHOAI Environment
+### Verify the RHOAI environment
 
 ```bash
-chmod +x scripts/verify_rhoai_env.sh
-./scripts/verify_rhoai_env.sh --namespace <your-namespace>
+make verify-env NAMESPACE=<your-namespace>
 ```
 
-### 4. Generate Synthetic Data
+### Build the pipeline component image
 
 ```bash
-python -m src.data_generation.customers --output-bucket poc-raw --records 500000
-python -m src.data_generation.transactions --output-bucket poc-raw --records 2000000
+make build-image push-image NAMESPACE=<your-namespace>
 ```
 
-### 5. Run the Pipeline
+### Generate synthetic retail retail banking data
 
-```python
-from src.pipeline.banking_pipeline import compile_and_run
+```bash
+make generate-data
+```
 
-compile_and_run(
-    kfp_endpoint="https://ds-pipeline-dspa.<namespace>.svc:8443",
-    use_case="fraud",
-    n_records=500000
-)
+### Compile and submit the pipeline
+
+```bash
+# Compile to YAML only (no cluster needed)
+make compile-pipeline
+
+# Compile and submit
+python -m src.pipeline.banking_pipeline \
+ --use-case churn \
+ --n-customers 500000 \
+ --kfp-endpoint https://ds-pipeline-dspa.<namespace>.svc:8443
 ```
 
 ---
 
-## 📦 Tech Stack
+## Open datasets
+
+| Dataset | Use case | Source |
+|---|---|---|
+| ULB Credit Card Fraud Detection | Fraud and AML | [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) |
+| Home Credit Default Risk | Credit risk | [Kaggle](https://www.kaggle.com/competitions/home-credit-default-risk) |
+| Bank Marketing | Churn proxy | [UCI ML Repository](https://archive.ics.uci.edu/dataset/222/bank+marketing) |
+| Default of Credit Card Clients | Credit risk baseline | [UCI ML Repository](https://archive.ics.uci.edu/dataset/350/default+of+credit+card+clients) |
+
+---
+
+## Tech stack
 
 | Layer | Technology |
 |---|---|
-| ML Platform | Red Hat OpenShift AI (RHOAI) 2.x |
-| Orchestration | Kubeflow Pipelines v2 (KFP SDK 2.x) |
-| Storage | MinIO (S3-compatible) / OpenShift Data Foundation |
-| Data Processing | pandas, PySpark, scikit-learn |
-| Data Quality | Great Expectations |
-| Experiment Tracking | MLflow |
-| Synthetic Data | Faker, SDV, CTGAN |
-| Containerization | OpenShift / Kubernetes |
+| ML platform | Red Hat OpenShift AI 2.x |
+| Pipeline orchestration | Kubeflow Pipelines v2 (KFP SDK 2.x) |
+| Object storage | MinIO / OpenShift Data Foundation (S3) |
+| Data processing | pandas, PySpark, scikit-learn |
+| Data quality | Great Expectations 0.18.x |
+| Experiment tracking | MLflow |
+| Synthetic data | Faker (ar_EG locale), SDV, CTGAN |
 
 ---
 
-## 📊 Open Datasets Used
+## Sprint status
 
-| Dataset | Use Case | Source | Records |
-|---|---|---|---|
-| [ULB Credit Card Fraud](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) | Fraud Detection | Kaggle | 284,807 |
-| [Home Credit Default Risk](https://www.kaggle.com/competitions/home-credit-default-risk) | Credit Risk | Kaggle | 300K+ |
-| [Bank Marketing UCI](https://archive.ics.uci.edu/dataset/222/bank+marketing) | Customer Churn | UCI ML Repo | 41,188 |
+Sprint 1 (current): architecture designed, data strategy defined, environment checklist ready, data scientist schema request sent.
 
----
+Sprint 2 (planned): environment verification, synthetic data generation, first end-to-end pipeline run.
 
-## 🔒 Data Privacy
-
-This repository contains **no real customer data**. All data used in this POC is either:
-- Publicly available benchmark datasets (fully anonymized at source)
-- Synthetically generated using Faker and SDV libraries
+[sprint/sprint_01_goals.md](sprint/sprint_01_goals.md)
 
 ---
 
-## 📅 Sprint Status
-
-**Current Sprint:** Sprint 1 — Design & Validation  
-**Status:** ✅ Architecture designed | ✅ Data strategy defined | 🔄 Environment verification pending
-
-See [`sprint/sprint_01_goals.md`](sprint/sprint_01_goals.md) for full details.
-
----
-
-## 🤝 Contributing
-
-This is an internal MLOps POC. For questions on the architecture or pipeline design, refer to the [`docs/`](docs/) directory.
-
----
-
-## 📄 License
+## License
 
 [MIT](LICENSE)

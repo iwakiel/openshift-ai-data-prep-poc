@@ -23,8 +23,8 @@ oc get csv -n redhat-ods-operator | grep -iE "rhods|openshift-ai"
 oc get DataScienceCluster -o jsonpath='{.items[0].status.phase}'
 ```
 
-**Expected:** `Succeeded` / `Ready`  
-**Blocker if missing:** RHOAI not installed — requires cluster-admin to install the operator.
+**Expected:** `Succeeded` / `Ready` 
+**Blocker if missing:** RHOAI not installed requires cluster-admin to install the operator.
 
 ---
 
@@ -37,7 +37,7 @@ oc get pods -n redhat-ods-applications | grep -iE "minio|ceph|noobaa"
 oc get storageclasses
 ```
 
-**Expected:** MinIO pods in `Running` state, or ODF/NooBaa storage class available.  
+**Expected:** MinIO pods in `Running` state, or ODF/NooBaa storage class available. 
 **Blocker if missing:** No storage backend = no pipeline artifacts, no dataset persistence.
 
 ---
@@ -51,8 +51,8 @@ oc get dspa -n <your-namespace>
 oc get pods -n <your-namespace> | grep ds-pipeline
 ```
 
-**Expected:** DSPA resource exists, pipeline pods in `Running` state.  
-**Blocker if missing:** Request provisioning from platform team. ETA: 1–2 business days.
+**Expected:** DSPA resource exists, pipeline pods in `Running` state. 
+**Blocker if missing:** Request provisioning from platform team. ETA: 12 business days.
 
 ---
 
@@ -64,7 +64,7 @@ Check that Python 3.9+ notebook images are available, and optionally a Spark-ena
 oc get imagestreams -n redhat-ods-applications --no-headers | awk '{print $1}'
 ```
 
-**Expected:** At minimum, a standard Data Science notebook image (Python 3.9).  
+**Expected:** At minimum, a standard Data Science notebook image (Python 3.9). 
 **Optional:** Spark-enabled image for PySpark workloads.
 
 ---
@@ -94,17 +94,17 @@ Run inside a test notebook:
 import boto3, os
 
 s3 = boto3.client(
-    's3',
-    endpoint_url=os.getenv('MINIO_ENDPOINT'),
-    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
-    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
+ 's3',
+ endpoint_url=os.getenv('MINIO_ENDPOINT'),
+ aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+ aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY')
 )
 
 # Should return bucket list without error
 print(s3.list_buckets())
 ```
 
-**Expected:** Returns bucket list (even if empty).  
+**Expected:** Returns bucket list (even if empty). 
 **Blocker if failing:** Network policy exception needed from platform team.
 
 ---
@@ -119,7 +119,7 @@ Run inside a test notebook:
 pip install great-expectations kfp sdv ydata-profiling --quiet
 ```
 
-**Expected:** Packages install successfully.  
+**Expected:** Packages install successfully. 
 **If blocked:** Request the internal PyPI mirror URL (Nexus/Artifactory) from the platform team, then use:
 
 ```bash
@@ -132,12 +132,12 @@ pip install great-expectations --index-url http://nexus.<internal-domain>/pypi/s
 
 | # | Check | Status | Notes |
 |---|---|---|---|
-| 1 | RHOAI operator | ⬜ Pending | |
-| 2 | Storage backend | ⬜ Pending | |
-| 3 | DSPA pipeline server | ⬜ Pending | |
-| 4 | Runtime images | ⬜ Pending | |
-| 5 | Resource quotas | ⬜ Pending | |
-| 6 | S3 connectivity | ⬜ Pending | |
-| 7 | PyPI access | ⬜ Pending | |
+| 1 | RHOAI operator | Pending | |
+| 2 | Storage backend | Pending | |
+| 3 | DSPA pipeline server | Pending | |
+| 4 | Runtime images | Pending | |
+| 5 | Resource quotas | Pending | |
+| 6 | S3 connectivity | Pending | |
+| 7 | PyPI access | Pending | |
 
-Legend: ✅ Pass | ❌ Blocked | ⬜ Pending | ⚠️ Partial
+Legend: Pass | Blocked | Pending | ️ Partial

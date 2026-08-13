@@ -14,12 +14,12 @@ env/
 .ipynb_checkpoints/
 *.ipynb
 
-# Data (never commit real data)
-*.csv
+# Data (never commit raw data files)
 *.parquet
 *.json.gz
-data/
 tmp/
+data/raw/
+data/processed/
 
 # Secrets & credentials
 .env

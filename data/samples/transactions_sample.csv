@@ -1,0 +1,21 @@
+transaction_id,amount_egp,currency,channel,merchant_category,transaction_hour,transaction_dow,is_international,pos_entry_mode,fraud_flag
+TXN0000000000,470.76,EGP,Online,Utilities,17,1,1,chip,0
+TXN0000000001,42.57,EGP,POS,Retail,13,5,1,chip,0
+TXN0000000002,99.62,EGP,Online,Retail,17,6,0,contactless,0
+TXN0000000003,558.87,EGP,Online,Transport,1,0,0,contactless,0
+TXN0000000004,1000.0,EGP,ATM,Food & Bev,11,2,0,swipe,0
+TXN0000000005,350.49,EGP,Branch,Healthcare,1,3,0,contactless,0
+TXN0000000006,252.28,EGP,Online,Travel,13,5,0,chip,0
+TXN0000000007,408.48,EGP,Online,Retail,17,4,0,chip,0
+TXN0000000008,3000.0,USD,ATM,Utilities,5,6,0,contactless,0
+TXN0000000009,92.23,EGP,POS,Retail,14,1,0,contactless,0
+TXN0000000010,1920.32,EGP,POS,Healthcare,22,0,0,chip,0
+TXN0000000011,586.97,EGP,Mobile,Electronics,9,4,0,chip,0
+TXN0000000012,103.21,EGP,Online,Retail,3,5,0,chip,0
+TXN0000000013,288.94,EGP,Online,Transport,15,0,0,chip,0
+TXN0000000014,86.97,EGP,POS,Travel,14,1,0,swipe,0
+TXN0000000015,2000.0,EGP,ATM,Transport,12,2,0,chip,0
+TXN0000000016,92.88,EGP,POS,Retail,5,1,0,contactless,0
+TXN0000000017,3000.0,EGP,ATM,Travel,19,3,0,swipe,0
+TXN0000000018,43.97,EGP,Online,Healthcare,4,1,0,contactless,0
+TXN0000000019,1488.25,EGP,Online,Retail,23,1,0,swipe,0

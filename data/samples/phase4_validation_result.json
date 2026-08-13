@@ -1,0 +1,69 @@
+{
+  "suite_name": "retail_banking.customers.v1",
+  "run_id": "run_001",
+  "success": true,
+  "statistics": {
+    "evaluated_expectations": 9,
+    "successful_expectations": 9,
+    "unsuccessful_expectations": 0,
+    "success_percent": 100.0
+  },
+  "results": [
+    {
+      "expectation": "expect_column_to_exist",
+      "column": "customer_id",
+      "success": true
+    },
+    {
+      "expectation": "expect_column_values_to_not_be_null",
+      "column": "customer_id",
+      "success": true
+    },
+    {
+      "expectation": "expect_column_values_to_be_unique",
+      "column": "customer_id",
+      "success": true
+    },
+    {
+      "expectation": "expect_column_values_to_be_between",
+      "column": "age",
+      "success": true,
+      "observed_min": 18,
+      "observed_max": 74
+    },
+    {
+      "expectation": "expect_column_values_to_be_between",
+      "column": "credit_score",
+      "success": true,
+      "observed_min": 302,
+      "observed_max": 849
+    },
+    {
+      "expectation": "expect_column_values_to_be_in_set",
+      "column": "gender",
+      "success": true
+    },
+    {
+      "expectation": "expect_column_values_to_be_in_set",
+      "column": "churn_flag",
+      "success": true
+    },
+    {
+      "expectation": "expect_column_mean_to_be_between",
+      "column": "churn_flag",
+      "success": true,
+      "observed_value": 0.179,
+      "min_value": 0.05,
+      "max_value": 0.4
+    },
+    {
+      "expectation": "expect_column_mean_to_be_between",
+      "column": "is_active",
+      "success": true,
+      "observed_value": 0.8,
+      "min_value": 0.5,
+      "max_value": 0.98
+    }
+  ],
+  "failed": []
+}

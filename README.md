@@ -25,26 +25,38 @@ Customer segmentation (unsupervised) is a fourth use case planned for Sprint 3.
 
 ## Architecture
 
-```
-Data sources
- Core banking tables (CSV / DB extract)
- Open benchmark datasets (Kaggle, UCI)
- Synthetic data (Faker + CTGAN)
- |
- v
-[ Phase 1 ] Ingestion boto3 -> MinIO S3 (poc-raw/)
-[ Phase 2 ] EDA and Profiling ydata-profiling -> HTML report (poc-reports/)
-[ Phase 3 ] Cleaning pandas -- dedup, clip, impute, derive features
-[ Phase 4 ] Quality validation Great Expectations -- data contracts per use case
-[ Phase 5 ] Feature output Parquet -> MinIO S3 (poc-features/)
- |
- v
- ML-ready feature datasets (fraud / credit_risk / churn)
+```mermaid
+flowchart LR
+    A1[Core banking tables] --> ING
+    A2[Open datasets\nKaggle / UCI] --> ING
+    A3[Synthetic data\nFaker + CTGAN] --> ING
+
+    subgraph RHOAI [Red Hat OpenShift AI]
+        ING[Phase 1\nIngestion\nMinIO S3]
+        EDA[Phase 2\nEDA\nydata-profiling]
+        CLN[Phase 3\nCleaning\npandas]
+        VAL{Phase 4\nValidation\nGreat Expectations}
+        FE[Phase 5\nFeatures\nscikit-learn]
+        KFP[KFP v2\nOrchestrator]
+        MLF[MLflow\nTracking]
+    end
+
+    ING --> EDA --> CLN --> VAL
+    VAL -->|pass| FE
+    VAL -->|fail| HALT([Pipeline halt])
+    FE --> F1[Fraud features]
+    FE --> F2[Credit risk features]
+    FE --> F3[Churn features]
+
+    KFP -.->|triggers| ING & CLN & VAL & FE
+    MLF -.->|logs| EDA & VAL & FE
 ```
 
-The pipeline is orchestrated by Kubeflow Pipelines v2 (DSPA) and experiment metadata is tracked in MLflow. All pipeline components run in a custom container image built from the project Dockerfile.
+The pipeline runs on Kubeflow Pipelines v2 (DSPA) with MLflow for experiment tracking. Components are containerised — see the project [Dockerfile](Dockerfile) and [Makefile](Makefile).
 
-Full architecture with bucket structure and resource profiles: [docs/architecture.md](docs/architecture.md)
+Full architecture with bucket layout, ER model, and design decisions: [docs/architecture.md](docs/architecture.md)
+
+Sprint review showcase (all diagrams on one page): [docs/sprint_review.md](docs/sprint_review.md)
 
 ---
 

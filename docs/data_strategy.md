@@ -6,6 +6,36 @@ Since production data cannot be used in a POC environment, the data strategy com
 
 ---
 
+
+## Dataset to Use Case Mapping
+
+```mermaid
+flowchart LR
+    ULB["ULB Credit Card Fraud
+Kaggle
+284K transactions"] --> FRAUD["Fraud and AML
+fraud_flag target
+0.17% positive class"]
+    HC["Home Credit Default Risk
+Kaggle
+300K applications + 7 tables"] --> CREDIT["Credit Risk Scoring
+default_flag target
+8% positive class"]
+    BM["Bank Marketing UCI
+41K contacts"] --> CHURN["Customer Churn
+churn_flag target
+18% positive class"]
+    GC["German Credit
+UCI
+1K records"] --> CREDIT
+
+    FRAUD & CREDIT & CHURN --> PIPELINE["Data Preparation Pipeline"]
+    PIPELINE --> FEATURES["ML-ready Parquet
+poc-features/ bucket"]
+```
+
+---
+
 ## Track 1 Open Benchmark Datasets
 
 Public datasets that map directly to each use case and serve as ground truth for pipeline validation.

@@ -118,3 +118,92 @@ Parquet provides: columnar compression (410× size reduction), schema enforcemen
 | Cleaning pipeline (pandas) | 2 | 4 | 8Gi | 16Gi |
 | Feature engineering (PySpark) | 4 | 8 | 16Gi | 32Gi |
 | GE validation | 1 | 2 | 2Gi | 4Gi |
+
+---
+
+## KFP Component Chain
+
+The five KFP v2 components execute in the following order. EDA and cleaning run sequentially (cleaning waits for EDA) to let the profile report inform transformation choices before committing.
+
+```mermaid
+flowchart LR
+    IMG["Docker image\nretail-data-prep:latest\nsrc package installed"] -.->|base| C1 & C2 & C3 & C4 & C5
+
+    C1["ingest_retail_data\n500K customers\n2M transactions\nMinIO upload"]
+    C2["profile_dataset\nSample 50K rows\nHTML report\nydata-profiling"]
+    C3["clean_retail_data\nDedup on PK\n3-sigma clip\nFeature derivation"]
+    C4["validate_retail_data\nExpectation suite\nRaises on failure\nSaves GE JSON"]
+    C5["build_retail_features\nJoin customers + txns\nUse-case aggregates\nParquet output"]
+
+    C1 -->|customers_uri\ntransactions_uri| C2
+    C1 -->|customers_uri\ntransactions_uri| C3
+    C2 -->|after| C3
+    C3 -->|output_uri| C4
+    C4 -->|result_uri\npass only| C5
+    C4 -->|fail| ERR([RuntimeError\npipeline halts])
+    C5 --> OUT[(poc-features/\nuse_case=fraud\nuse_case=credit_risk\nuse_case=churn)]
+```
+
+---
+
+## Retail Banking Data Model
+
+Schema of the simulated and synthetically-generated tables. Foreign key relationships define the join logic used in the feature engineering component.
+
+```mermaid
+erDiagram
+    CUSTOMER {
+        string customer_id PK
+        int    age
+        string gender
+        string governorate
+        string customer_segment
+        float  annual_income
+        int    credit_score
+        int    months_with_bank
+        int    num_products
+        bool   has_loan
+        bool   has_credit_card
+        bool   has_savings_account
+        bool   is_active
+        int    churn_flag
+    }
+
+    ACCOUNT {
+        string account_id PK
+        string customer_id FK
+        string account_type
+        float  balance
+        string status
+    }
+
+    TRANSACTION {
+        string transaction_id PK
+        string customer_id FK
+        float  amount
+        string currency
+        string channel
+        string merchant_category
+        int    transaction_hour
+        int    transaction_dow
+        bool   is_international
+        string pos_entry_mode
+        int    fraud_flag
+    }
+
+    LOAN {
+        string loan_id PK
+        string customer_id FK
+        string loan_type
+        float  principal_amount
+        int    tenor_months
+        float  interest_rate
+        string delinquency_stage
+    }
+
+    CUSTOMER ||--o{ ACCOUNT : owns
+    CUSTOMER ||--o{ TRANSACTION : makes
+    CUSTOMER ||--o{ LOAN : holds
+    ACCOUNT  ||--o{ TRANSACTION : associated_with
+```
+

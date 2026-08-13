@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Great Expectations — Validation Report</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:system-ui,-apple-system,sans-serif; background:#0F172A; color:#E2E8F0; padding:24px; }
+  h1   { font-size:20px; font-weight:700; margin-bottom:4px; }
+  h2   { font-size:14px; color:#94A3B8; margin-bottom:24px; }
+  h3   { font-size:13px; font-weight:700; color:#60A5FA; text-transform:uppercase;
+          letter-spacing:1.5px; margin:28px 0 12px; border-bottom:1px solid #1E293B; padding-bottom:6px; }
+  .meta { display:flex; gap:16px; margin-bottom:28px; flex-wrap:wrap; }
+  .card { background:#1E293B; border-radius:10px; padding:14px 20px; min-width:140px; }
+  .card .val { font-size:26px; font-weight:700; }
+  .card .lbl { font-size:11px; color:#64748B; margin-top:2px; }
+  .banner { border-radius:12px; padding:16px 24px; margin-bottom:24px;
+             display:flex; align-items:center; gap:16px; }
+  .banner.pass { background:#052e16; border:1px solid #166534; }
+  .banner.fail { background:#2d0e0e; border:1px solid #7f1d1d; }
+  .banner .status { font-size:32px; font-weight:800; }
+  .banner .detail { font-size:13px; color:#94A3B8; margin-top:4px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th    { background:#1E293B; padding:9px 12px; text-align:left; color:#64748B;
+           font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.5px; }
+  td    { padding:9px 12px; border-bottom:1px solid #0F172A; }
+  .progress-wrap { background:#1E293B; border-radius:8px; height:12px; width:100%; overflow:hidden; margin-top:4px; }
+  .progress-bar  { height:12px; background:linear-gradient(90deg, #22C55E, #4ADE80); border-radius:8px; }
+  .mlflow-section { background:#1E293B; border-radius:12px; padding:16px 20px; margin-top:24px; }
+  .mlflow-row { display:flex; justify-content:space-between; padding:6px 0;
+                 border-bottom:1px solid #0F172A; font-size:13px; }
+  .mlflow-key { color:#94A3B8; }
+  .mlflow-val { color:#38BDF8; font-family:monospace; }
+  code { background:#0F172A; padding:2px 6px; border-radius:4px; font-size:12px; color:#818CF8; }
+</style>
+</head>
+<body>
+
+<h1>Phase 4 — Great Expectations Validation Report</h1>
+<h2>Suite: retail_banking.customers.v1 &nbsp;|&nbsp; Run: run_001</h2>
+
+<div class="banner pass">
+  <div>
+    <div class="status" style="color:#4ADE80">
+      PASSED
+    </div>
+    <div class="detail">
+      All 9 expectations evaluated successfully.
+      Data quality contract is satisfied. Pipeline continues to Phase 5.
+    </div>
+  </div>
+</div>
+
+<div class="meta">
+  <div class="card">
+    <div class="val" style="color:#4ADE80">9</div>
+    <div class="lbl">Expectations passed</div>
+  </div>
+  <div class="card">
+    <div class="val" style="color:#F87171">0</div>
+    <div class="lbl">Expectations failed</div>
+  </div>
+  <div class="card">
+    <div class="val">9</div>
+    <div class="lbl">Total evaluated</div>
+  </div>
+  <div class="card">
+    <div class="val" style="color:#4ADE80">100%</div>
+    <div class="lbl">Success rate</div>
+    <div class="progress-wrap" style="margin-top:6px">
+      <div class="progress-bar" style="width:100.0%"></div>
+    </div>
+  </div>
+</div>
+
+<h3>Expectation Results</h3>
+<table>
+  <tr>
+    <th>Expectation type</th>
+    <th>Column</th>
+    <th>Result</th>
+    <th>Observed</th>
+  </tr>
+  
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_to_exist</td>
+      <td style="color:#60A5FA">customer_id</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px"></td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_not_be_null</td>
+      <td style="color:#60A5FA">customer_id</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px"></td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_be_unique</td>
+      <td style="color:#60A5FA">customer_id</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px"></td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_be_between</td>
+      <td style="color:#60A5FA">age</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px">range: 18 – 74</td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_be_between</td>
+      <td style="color:#60A5FA">credit_score</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px">range: 302 – 849</td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_be_in_set</td>
+      <td style="color:#60A5FA">gender</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px"></td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_values_to_be_in_set</td>
+      <td style="color:#60A5FA">churn_flag</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px"></td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_mean_to_be_between</td>
+      <td style="color:#60A5FA">churn_flag</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px">observed: 0.179</td>
+    </tr>
+    <tr style="background:#052e1622">
+      <td style="color:#94A3B8; font-family:monospace; font-size:12px">expect_column_mean_to_be_between</td>
+      <td style="color:#60A5FA">is_active</td>
+      <td style="color:#4ADE80; font-weight:700">PASS</td>
+      <td style="color:#64748B; font-size:12px">observed: 0.8</td>
+    </tr>
+</table>
+
+<h3>What happens if this fails?</h3>
+<div style="background:#1E293B; border-radius:10px; padding:14px 18px; font-size:13px; line-height:1.8; color:#94A3B8">
+  The <code>validate_retail_data</code> KFP component raises a <code>RuntimeError</code> with the list of
+  failed expectations. Kubeflow Pipelines marks the run as <span style="color:#F87171">FAILED</span>
+  and does not start Phase 5 (feature engineering). The validation result JSON is saved to
+  <code>poc-reports/ge/run_id=xxx/</code> in MinIO for investigation. The raw and cleaned data
+  remain in their buckets and can be inspected manually.
+</div>
+
+<h3>MLflow integration — what gets logged</h3>
+<div class="mlflow-section">
+  <div style="font-size:12px; color:#64748B; margin-bottom:10px">
+    Every pipeline run logs the following to the MLflow experiment <code>retail-banking-data-prep</code>
+  </div>
+  <div class="mlflow-row">
+    <span class="mlflow-key">validation_success</span>
+    <span class="mlflow-val">1</span>
+  </div>
+  <div class="mlflow-row">
+    <span class="mlflow-key">expectations_evaluated</span>
+    <span class="mlflow-val">9</span>
+  </div>
+  <div class="mlflow-row">
+    <span class="mlflow-key">expectations_passed</span>
+    <span class="mlflow-val">9</span>
+  </div>
+  <div class="mlflow-row">
+    <span class="mlflow-key">success_percent</span>
+    <span class="mlflow-val">100.0</span>
+  </div>
+  <div class="mlflow-row">
+    <span class="mlflow-key">suite_name</span>
+    <span class="mlflow-val">retail_banking.customers.v1</span>
+  </div>
+  <div class="mlflow-row" style="border:none">
+    <span class="mlflow-key">artifact</span>
+    <span class="mlflow-val">ge_validation_result.json &nbsp;+&nbsp; this HTML report</span>
+  </div>
+</div>
+
+<div style="margin-top:24px; font-size:11px; color:#475569; border-top:1px solid #1E293B; padding-top:12px">
+  Great Expectations 0.18.12 &nbsp;|&nbsp;
+  Pipeline: retail-banking-data-prep v0.1.0 &nbsp;|&nbsp;
+  MLflow Experiment: <span style="color:#60A5FA">retail-banking-data-prep</span> &nbsp;|&nbsp;
+  Run: <span style="color:#60A5FA">run_001</span>
+</div>
+
+</body></html>

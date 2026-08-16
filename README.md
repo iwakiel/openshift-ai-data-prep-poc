@@ -185,6 +185,31 @@ python -m src.pipeline.banking_pipeline \
 
 ---
 
+## Generated data samples
+
+The pipeline was run locally to validate all five phases. Sample outputs are committed for
+reference (20 rows each; full Parquet files are gitignored).
+
+| File | Phase | Contents |
+|---|---|---|
+| [phase1_raw_customers.csv](data/samples/phase1_raw_customers.csv) | 1 — Ingestion | 17 columns, raw generated customer records |
+| [phase1_raw_transactions.csv](data/samples/phase1_raw_transactions.csv) | 1 — Ingestion | 11 columns, transactions with fraud flag |
+| [phase2_eda_profile.csv](data/samples/phase2_eda_profile.csv) | 2 — EDA | Per-column statistics: dtype, nulls, mean, std, min, max |
+| [phase3_clean_customers.csv](data/samples/phase3_clean_customers.csv) | 3 — Cleaning | 20 columns — nulls filled, outliers clipped, 3 derived features added |
+| [phase4_validation_result.json](data/samples/phase4_validation_result.json) | 4 — Validation | Great Expectations result, 9/9 expectations passed |
+| [phase5_features_churn.csv](data/samples/phase5_features_churn.csv) | 5 — Features | 24-column ML-ready churn feature set |
+| [phase5_features_fraud.csv](data/samples/phase5_features_fraud.csv) | 5 — Features | 20-column ML-ready fraud feature set |
+
+HTML reports: [EDA profile](data/samples/reports/phase2_eda_report.html) ·
+[GE validation report](data/samples/reports/phase4_ge_validation_report.html)
+
+Generation statistics from the Sprint 1 run: 100,000 customers at 17.9% churn rate
+(18% target), 500,000 transactions at 1.20% fraud rate (1.2% target). Arabic names follow
+the 4-part Egyptian official format; national IDs and phone numbers use Egyptian formats;
+all monetary values in EGP.
+
+---
+
 ## Tech stack
 
 | Layer | Technology |
@@ -199,13 +224,50 @@ python -m src.pipeline.banking_pipeline \
 
 ---
 
+## Platform analysis
+
+Evidence-based comparison of Cloudera (CDP/CML) and Red Hat OpenShift AI, grounded in the
+bank's own documented platform evaluation concerns and verified against vendor release notes.
+
+| Document | Audience |
+|---|---|
+| [Cloudera vs RHOAI — Banque Misr analysis](docs/platform_analysis/cloudera_vs_rhoai_banque_misr.md) | Management and stakeholders |
+| [CML vs RHOAI — technical study](docs/platform_analysis/cml_vs_rhoai_study.md) | Engineering |
+| [Executive summary](docs/platform_analysis/cml_vs_rhoai_executive.md) | Leadership |
+
+Headline finding: RHOAI can replace the CML workspace and MLOps layer but cannot replace the
+CDP data layer (Ranger, Atlas, CDW). The recommended architecture is coexistence — CDP as the
+governed data platform, RHOAI as the ML compute and MLOps layer.
+
+---
+
+## Learning
+
+[MLOps platform curriculum](docs/learning/mlops_platform_curriculum.md) — complete knowledge
+document covering Kubernetes foundations, OpenShift AI, Cloudera CDP/CML, a concept
+translation map between the two platforms, a four-week schedule, and verified external
+resources.
+
+---
+
 ## Sprint status
 
-Sprint 1 (current): architecture designed, data strategy defined, environment checklist ready, data scientist schema request sent.
+Sprint 1 (current): architecture designed, pipeline implemented, synthetic data generators
+built and validated locally, environment verification script ready, platform analysis complete.
 
-Sprint 2 (planned): environment verification, synthetic data generation, first end-to-end pipeline run.
+Sprint 2 (planned): environment verification on cluster, schema alignment with the retail data
+scientist, first end-to-end pipeline run on RHOAI, CDW connectivity test from an RHOAI workbench.
 
-[sprint/sprint_01_goals.md](sprint/sprint_01_goals.md)
+Full sprint detail: [sprint/sprint_01_goals.md](sprint/sprint_01_goals.md)
+
+---
+
+## Data privacy
+
+This repository contains no real customer data. All data is either synthetically generated
+using Faker and NumPy statistical distributions, or drawn from publicly available benchmark
+datasets. Raw generated Parquet files are excluded from version control; only 20-row
+documentation samples are committed.
 
 ---
 
